@@ -89,33 +89,19 @@ const MainMenuConfig: Array<MenuItem> = [
   },
 ];
 
-const RedacteurMenuConfig: Array<MenuItem> = [
-  {
-    pages: [
-      {
-        heading: "Dashboard",
-        route: "/dashboard",
-        svgIcon: getAssetPath("media/icons/duotune/art/art002.svg"),
-        fontIcon: "bi-app-indicator",
-      },
-    ],
-  },
+const PurpleBirdMenuConfig: Array<MenuItem> = [
   {
     heading: "Parametres",
     pages: [
       {
-        route: "/blog",
-        svgIcon: getAssetPath("media/icons/duotune/art/art002.svg"),
+        route: "/users",
+        svgIcon: getAssetPath("media/icons/duotune/social/soc002.svg"),
         fontIcon: "bi-app-indicator",
-        sectionTitle: "Gestion Blog",
+        sectionTitle: "Users",
         sub: [
           {
-            heading: "Categorie Articles",
-            route: "/categorie-articles",
-          },
-          {
-            heading: "Articles",
-            route: "/articles",
+            heading: "Gestion Utilisateurs",
+            route: "/utilisateurs",
           },
         ],
       },
@@ -123,4 +109,4 @@ const RedacteurMenuConfig: Array<MenuItem> = [
   },
 ];
 
-export { MainMenuConfig, RedacteurMenuConfig };
+export { MainMenuConfig, PurpleBirdMenuConfig };

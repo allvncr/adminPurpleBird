@@ -18,7 +18,7 @@ export const useUserStore = defineStore("User", {
   getters: {},
   actions: {
     setError(errors) {
-      this.errors = { ...errors };
+      this.errors = errors;
     },
     async all_utilisateur(payload) {
       this.utilisateurLoader = true;
@@ -28,37 +28,37 @@ export const useUserStore = defineStore("User", {
         per_page: payload.per_page,
       };
       try {
-        const response = await axios.get(domain + "/users", {
+        const response = await axios.get(domain + "/auth/all", {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
           params,
         });
-        this.utilisateurs = response.data.data.data.map((item) =>
-          User.create(item)
-        );
-        this.utilisateurTotal = response.data.data.meta.total;
-        this.utilisateurTotalPages = response.data.data.meta.last_page;
+        this.utilisateurs = response.data.map((item) => User.create(item));
+        this.utilisateurTotal = response.data.length;
+        this.utilisateurTotalPages = 1;
+        this.setError(false);
         this.utilisateurLoader = false;
         return true;
       } catch ({ response }) {
         this.utilisateurLoader = false;
-        this.setError(response.data.errors);
+        this.setError(true);
         return false;
       }
     },
     async store_utilisateur(payload) {
       try {
-        const response = await axios.post(domain + `/users`, payload, {
+        const response = await axios.post(domain + `/auth/signup`, payload, {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
         });
-        this.utilisateurs.push(User.create(response.data.data));
+        this.utilisateurs.push(User.create(payload));
         this.utilisateurTotal++;
+        this.setError(false);
         return true;
       } catch ({ response }) {
-        this.setError(response.data.errors);
+        this.setError(true);
         return false;
       }
     },
@@ -77,9 +77,10 @@ export const useUserStore = defineStore("User", {
           }
         }
         this.utilisateurLoader = false;
+        this.setError(false);
         return true;
       } catch ({ response }) {
-        this.setError(response.data.errors);
+        this.setError(true);
         return false;
       }
     },
@@ -88,8 +89,6 @@ export const useUserStore = defineStore("User", {
         id: payload.id,
         name: payload.name,
         email: payload.email,
-        address: payload.address,
-        phone: payload.phone,
       };
       try {
         const response = await axios.put(
@@ -103,14 +102,15 @@ export const useUserStore = defineStore("User", {
           }
         );
         for (let index = 0; index < this.utilisateurs.length; index++) {
-          if (this.utilisateurs[index].id == response.data.data.id) {
-            this.utilisateurs[index].update(response.data.data);
+          if (this.utilisateurs[index].id == response.data.id) {
+            this.utilisateurs[index].update(response.data);
             break;
           }
         }
+        this.setError(false);
         return true;
       } catch ({ response }) {
-        this.setError(response.data.errors);
+        this.setError(true);
         return false;
       }
     },

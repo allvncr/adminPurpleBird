@@ -341,11 +341,10 @@
                   <!--begin::Username-->
                   <div class="d-flex flex-column">
                     <div class="fw-bold d-flex align-items-center fs-5">
-                      {{ authStore.user.name }}
+                      {{ authStore.user.username }}
                       <span
                         class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2"
                       >
-                        <!-- {{ authStore.user.role[0]?.name }} -->
                         Admin
                       </span>
                     </div>

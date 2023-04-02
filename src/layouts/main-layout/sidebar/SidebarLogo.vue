@@ -10,16 +10,24 @@
         "
         class="logo app-sidebar-logo-default"
       >
-        <img src="../../../assets/new_logo.png" alt="logo" class="logo" />
+        <img
+          src="../../../assets/purplebird-white.jpg"
+          alt="logo"
+          class="logo"
+        />
       </div>
       <div
         v-if="themeMode === 'light' && layout === 'light-sidebar'"
         class="logo app-sidebar-logo-default"
       >
-        <img src="../../../assets/new_logo.png" alt="logo" class="logo" />
+        <img
+          src="../../../assets/purplebird-white.jpg"
+          alt="logo"
+          class="logo"
+        />
       </div>
       <div class="app-sidebar-logo-minimize">
-        <img src="../../../assets/min_logo.png" alt="logo" class="logoMin" />
+        <img src="../../../assets/PURPLEBIRD.png" alt="logo" class="logoMin" />
       </div>
 
       <!-- <img

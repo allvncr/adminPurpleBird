@@ -113,10 +113,10 @@
                 :key="i"
               >
                 <td>{{ utilisateur.id }}</td>
-                <td>{{ utilisateur.name }}</td>
+                <td>{{ utilisateur.username }}</td>
                 <td>{{ utilisateur.email }}</td>
                 <td>
-                  <div v-for="role in utilisateur.role" :key="role.id">
+                  <div v-for="role in utilisateur.roles" :key="role.id">
                     {{ role.name }}
                   </div>
                 </td>
@@ -191,43 +191,6 @@
             </tbody>
           </table>
         </div>
-        <div class="row">
-          <div
-            class="col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start"
-          >
-            <div
-              class="dataTables_length"
-              id="kt_ecommerce_products_table_length"
-            >
-              <label
-                ><select
-                  name="kt_ecommerce_products_table_length"
-                  aria-controls="kt_ecommerce_products_table"
-                  class="form-select form-select-sm form-select-solid"
-                  v-model="perPage"
-                  @change="setup(true)"
-                >
-                  <option value="5">5</option>
-                  <option value="8">8</option>
-                  <option value="10">10</option>
-                  <option value="15">15</option>
-                </select></label
-              >
-            </div>
-          </div>
-          <div
-            class="col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end"
-          >
-            <table-pagination
-              :currentPage="page"
-              :perPage="perPage"
-              :totalPages="utilisateurStore.utilisateurTotalPages"
-              :total="utilisateurStore.utilisateurTotal"
-              @page-change="pagination"
-              v-model="page"
-            ></table-pagination>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -263,32 +226,12 @@
                 <label
                   class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
                 >
-                  <span class="required">Role</span>
-                </label>
-                <el-select
-                  placeholder=""
-                  class="form-control form-control-solid"
-                  v-model="new_utilisateur.role"
-                >
-                  <el-option
-                    v-for="opt in roleStore.roles"
-                    :key="opt.id"
-                    :value="opt.name"
-                    :label="opt.name"
-                  >
-                  </el-option>
-                </el-select>
-              </div>
-              <div class="d-flex flex-column mb-7 fv-row">
-                <label
-                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
-                >
                   <span class="required">Nom</span>
                 </label>
                 <input
-                  v-model="new_utilisateur.name"
+                  v-model="new_utilisateur.username"
                   type="text"
-                  name="title"
+                  name="username"
                   class="form-control form-control-solid"
                   placeholder=""
                   required
@@ -311,36 +254,6 @@
                 />
               </div>
 
-              <div class="d-flex flex-column mb-7 fv-row">
-                <label
-                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
-                >
-                  <span>Adresse</span>
-                </label>
-                <input
-                  v-model="new_utilisateur.address"
-                  type="text"
-                  name="address"
-                  class="form-control form-control-solid"
-                  placeholder=""
-                />
-              </div>
-
-              <div class="d-flex flex-column mb-7 fv-row">
-                <label
-                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
-                >
-                  <span>Numero telephone</span>
-                </label>
-                <input
-                  v-model="new_utilisateur.phone"
-                  type="tel"
-                  name="phone"
-                  class="form-control form-control-solid"
-                  placeholder=""
-                />
-              </div>
-
               <div class="d-flex flex-column mb-7 fv-row" v-if="!current_edit">
                 <label
                   class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
@@ -354,24 +267,6 @@
                   autocomplete="off"
                   class="form-control form-control-solid"
                   placeholder=""
-                  required
-                />
-              </div>
-
-              <div class="d-flex flex-column mb-7 fv-row" v-if="!current_edit">
-                <label
-                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
-                >
-                  <span class="required">Password confirmation</span>
-                </label>
-                <input
-                  v-model="new_utilisateur.password_confirmation"
-                  type="password"
-                  name="password_confirmation"
-                  class="form-control form-control-solid"
-                  placeholder=""
-                  autocomplete="off"
-                  minlength="8"
                   required
                 />
               </div>
@@ -419,22 +314,19 @@ export default {
       page: 1,
       perPage: 8,
       new_utilisateur: {
-        name: null,
+        username: null,
         email: null,
         password: null,
-        password_confirmation: null,
         role: null,
-        address: null,
-        phone: null,
       },
       options: [
         {
-          value: "photograph",
-          name: "Photographe",
+          value: "admin",
+          name: "Admin",
         },
         {
-          value: "client",
-          name: "Client",
+          value: "user",
+          name: "User",
         },
       ],
       search: "",
@@ -474,12 +366,11 @@ export default {
     editItem(item) {
       this.current_edit = true;
       this.new_utilisateur = { ...item };
-      if (item.role[0]) this.new_utilisateur.role = item.role[0].name;
     },
     deleteItem(item) {
       Swal.fire({
         background: "#1e1e2d",
-        text: "Êtes-vous sûr de vouloir supprimer " + item.name + " ?",
+        text: "Êtes-vous sûr de vouloir supprimer " + item.username + " ?",
         icon: "warning",
         buttonsStyling: false,
         confirmButtonText: "Oui, Supprimer !",
@@ -536,13 +427,10 @@ export default {
       // Modification ou Creation
       if (!this.current_edit) {
         var data = {
-          name: this.new_utilisateur.name,
+          username: this.new_utilisateur.username,
           email: this.new_utilisateur.email,
-          address: this.new_utilisateur.address,
-          phone: this.new_utilisateur.phone,
           password: this.new_utilisateur.password,
-          password_confirmation: this.new_utilisateur.password_confirmation,
-          role: this.new_utilisateur.role,
+          role: ["Admin"],
         };
 
         const valid = await this.utilisateurStore.store_utilisateur(data);
@@ -560,11 +448,10 @@ export default {
           });
           this.resetModal();
         } else {
-          const error = Object.values(this.utilisateurStore.errors);
-
           ElNotification({
             title: "Erreur",
-            message: error[0][0],
+            message:
+              "Désolé, il semble que des erreurs aient été détectées, veuillez réessayer.",
             position: "bottom-left",
             type: "error",
             customClass: "alert-danger",
@@ -574,11 +461,9 @@ export default {
         var data = {
           id: this.new_utilisateur.id,
           name: this.new_utilisateur.name,
-          address: this.new_utilisateur.address,
-          phone: this.new_utilisateur.phone,
           email: this.new_utilisateur.email,
         };
-        if (this.new_utilisateur.role) data.role = this.new_utilisateur.role;
+        // if (this.new_utilisateur.role) data.role = this.new_utilisateur.role;
 
         const valid = await this.utilisateurStore.edit_utilisateur(data);
         submitButtonRef.disabled = false;
@@ -612,8 +497,6 @@ export default {
         name: "",
         email: "",
         password: "",
-        password_confirmation: "",
-        role: "",
       };
       this.current_edit = false;
       hideModal(this.$refs.newCardModalRef);
@@ -624,11 +507,6 @@ export default {
     this.utilisateurStore.all_utilisateur({
       page: this.page,
       per_page: this.perPage,
-    });
-
-    this.roleStore.all_role({
-      page: 1,
-      per_page: 1000,
     });
     this.$el.addEventListener("hidden.bs.modal", this.resetModal);
   },

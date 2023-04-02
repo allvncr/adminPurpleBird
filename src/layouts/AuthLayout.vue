@@ -37,7 +37,7 @@
           />
         </router-link> -->
         <div class="logo app-sidebar-logo-default">
-          <img src="../assets/light_logo.png" alt="logo" />
+          <img src="../assets/purplebird-white.jpg" alt="logo" />
         </div>
         <!--end::Logo-->
 
@@ -86,8 +86,13 @@ export default defineComponent({
 .logo {
   display: flex;
   align-items: center;
-  color: #fff;
-  font-size: 32px;
+  width: 350px;
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+
   .logoSmall {
     display: block;
     margin-left: 2px;

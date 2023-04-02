@@ -18,7 +18,7 @@
       <!--begin::Input group-->
       <div class="fv-row mb-10">
         <!--begin::Label-->
-        <label class="form-label fs-6 fw-bold text-dark">Email</label>
+        <label class="form-label fs-6 fw-bold text-dark">Username</label>
         <!--end::Label-->
 
         <!--begin::Input-->
@@ -26,13 +26,13 @@
           tabindex="1"
           class="form-control form-control-lg form-control-solid"
           type="text"
-          name="email"
+          name="username"
           autocomplete="off"
         />
         <!--end::Input-->
         <div class="fv-plugins-message-container">
           <div class="fv-help-block">
-            <ErrorMessage name="email" />
+            <ErrorMessage name="text" />
           </div>
         </div>
       </div>
@@ -158,7 +158,7 @@ export default defineComponent({
 
     //Create form validation object
     const login = Yup.object().shape({
-      email: Yup.string().email().required().label("Email"),
+      username: Yup.string().required().label("Username"),
       password: Yup.string().min(6).required().label("Password"),
     });
 
@@ -176,39 +176,25 @@ export default defineComponent({
 
       // Send login request
       await store.login(values);
-      const error = Object.values(store.errors);
-      if (error.length === 0) {
-        if (
-          store.user?.role[0]?.name == "Admin" ||
-          store.user?.role[0]?.name == "Redacteur"
-        ) {
-          ElNotification({
-            title: "Succès",
-            message: "Vous vous êtes connecté avec succès !",
-            position: "bottom-left",
-            type: "success",
-            customClass: "alert-success",
-          });
-          window.location.href = "/dashboard";
-        } else {
-          ElNotification({
-            title: "Erreur",
-            message: "Cet utilisateur n'est pas autorisé à acceder a ce site",
-            position: "bottom-left",
-            type: "error",
-            customClass: "alert-danger",
-          });
-          store.logout();
-        }
+      const error = store.errors;
+      if (!error) {
+        ElNotification({
+          title: "Succès",
+          message: "Vous vous êtes connecté avec succès !",
+          position: "bottom-left",
+          type: "success",
+          customClass: "alert-success",
+        });
+        window.location.href = "/utilisateurs";
       } else {
         ElNotification({
           title: "Erreur",
-          message: error[0] as string,
+          message: "Cet utilisateur n'est pas autorisé à acceder a ce site",
           position: "bottom-left",
           type: "error",
           customClass: "alert-danger",
         });
-        store.errors = [];
+        store.errors = null;
       }
 
       //Deactivate indicator

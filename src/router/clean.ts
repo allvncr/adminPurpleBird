@@ -201,12 +201,7 @@ router.beforeEach((to, from, next) => {
       next({ name: "sign-in" });
     }
   } else {
-    if (to.meta.super) {
-      if (authStore.user.role[0].name == "Admin") next();
-      else {
-        next("/dashboard");
-      }
-    } else next();
+    next();
   }
 
   // Scroll page to top on every route change
