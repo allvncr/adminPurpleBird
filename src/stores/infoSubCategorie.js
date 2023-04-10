@@ -2,9 +2,8 @@ import axios from "axios";
 import { defineStore } from "pinia";
 import domain from "@/environment";
 import JwtService from "@/core/services/JwtService";
-import CategoryPhoto from "@/models/categoryPhoto";
 
-export const useCategoriePhotoStore = defineStore("categoriePhoto", {
+export const useInfoSubCategorieStore = defineStore("infoSubCategorie", {
   state: () => {
     return {
       // all these properties will have their type inferred automatically
@@ -21,7 +20,7 @@ export const useCategoriePhotoStore = defineStore("categoriePhoto", {
     setError(errors) {
       this.errors = { ...errors };
     },
-    async all_categorie(payload) {
+    async all_subcategorie(payload) {
       this.categorieLoader = true;
       const params = {
         search: payload.search,
@@ -35,16 +34,31 @@ export const useCategoriePhotoStore = defineStore("categoriePhoto", {
           },
           params,
         });
-        this.categories = response.data.data.data.map((item) =>
-          CategoryPhoto.create(item)
-        );
-        this.categorieTotal = response.data.data.meta.total;
-        this.categorieTotalPages = response.data.data.meta.last_page;
+        this.categories = response.data;
+        this.categorieTotal = response.data.length;
+        this.categorieTotalPages = 1;
         this.categorieLoader = false;
         return true;
       } catch ({ response }) {
         this.setError(response.data.errors);
         this.categorieLoader = false;
+        return false;
+      }
+    },
+    async get_infosubcategorie(payload) {
+      this.categories = [];
+      try {
+        const response = await axios.get(
+          domain + `/subcategories/infosubcategories/` + payload,
+          {
+            headers: {
+              Authorization: `Bearer ` + JwtService.getToken(),
+            },
+          }
+        );
+        this.categories = response.data;
+        return true;
+      } catch (error) {
         return false;
       }
     },

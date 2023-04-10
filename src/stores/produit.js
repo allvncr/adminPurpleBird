@@ -2,16 +2,17 @@ import axios from "axios";
 import { defineStore } from "pinia";
 import domain from "@/environment";
 import JwtService from "@/core/services/JwtService";
-import Photographe from "@/models/photographe";
+// import Produit from "@/models/produit";
 
-export const usePhotographeStore = defineStore("Photographe", {
+export const useProduitStore = defineStore("Produit", {
   state: () => {
     return {
       // all these properties will have their type inferred automatically
-      photographes: [],
-      photographeTotal: 0,
-      photographeTotalPages: 0,
-      photographeLoader: false,
+      produits: [],
+      produit: null,
+      produitTotal: 0,
+      produitTotalPages: 0,
+      produitLoader: false,
       errors: [],
     };
   },
@@ -20,60 +21,71 @@ export const usePhotographeStore = defineStore("Photographe", {
     setError(errors) {
       this.errors = { ...errors };
     },
-    async all_photographe(payload) {
-      this.photographeLoader = true;
+    async all_produit(payload) {
+      this.produitLoader = true;
       const params = {
-        search: payload.search,
+        name: payload.search,
         page: payload.page,
         per_page: payload.per_page,
       };
       try {
-        const response = await axios.get(domain + "/photographers", {
+        const response = await axios.get(domain + "/products", {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
           params,
         });
-        console.log(response.data.data.data);
-        this.photographes = response.data.data.data.map((item) =>
-          Photographe.create(item)
+        this.produits = response.data;
+        this.produitTotal = response.data.length;
+        this.produitTotalPages = 1;
+        this.produitLoader = false;
+        return true;
+      } catch ({ response }) {
+        this.setError(response.data.errors);
+        this.produitLoader = false;
+        return false;
+      }
+    },
+    async get_produit(payload) {
+      try {
+        const response = await axios.get(
+          domain + `/products/single-product/` + payload,
+          {
+            headers: {
+              Authorization: `Bearer ` + JwtService.getToken(),
+            },
+          }
         );
-        this.photographeTotal = response.data.data.meta.total;
-        this.photographeTotalPages = response.data.data.meta.last_page;
-        this.photographeLoader = false;
+        this.produit = response.data;
         return true;
-      } catch ({ response }) {
-        this.setError(response.data.errors);
-        this.photographeLoader = false;
+      } catch (error) {
         return false;
       }
     },
-    async store_photographe(payload) {
+    async store_produit(payload) {
       try {
-        const response = await axios.post(domain + `/photographers`, payload, {
+        await axios.post(domain + `/products`, payload, {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
         });
-        this.photographes.push(response.data.data);
-        this.photographeTotal++;
         return true;
       } catch ({ response }) {
         this.setError(response.data.errors);
         return false;
       }
     },
-    async delete_photographe(payload) {
+    async delete_produit(payload) {
       try {
-        await axios.delete(domain + `/photographers/` + payload.id, {
+        await axios.delete(domain + `/products/` + payload.id, {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
         });
-        for (let index = 0; index < this.photographes.length; index++) {
-          if (this.photographes[index].id == payload.id) {
-            this.photographes.splice(index, 1);
-            this.photographeTotal--;
+        for (let index = 0; index < this.produits.length; index++) {
+          if (this.produits[index].id == payload.id) {
+            this.produits.splice(index, 1);
+            this.produitTotal--;
             break;
           }
         }
@@ -83,7 +95,7 @@ export const usePhotographeStore = defineStore("Photographe", {
         return false;
       }
     },
-    async edit_photographe(payload) {
+    async edit_produit(payload) {
       var params = {
         id: payload.id,
         bio: payload.bio,
@@ -100,7 +112,7 @@ export const usePhotographeStore = defineStore("Photographe", {
       }
       try {
         const response = await axios.put(
-          domain + `/photographers/` + params.id,
+          domain + `/products/` + params.id,
           payload,
           {
             headers: {
@@ -109,9 +121,9 @@ export const usePhotographeStore = defineStore("Photographe", {
             params,
           }
         );
-        for (let index = 0; index < this.photographes.length; index++) {
-          if (this.photographes[index].id == response.data.data.id) {
-            this.photographes[index].update(response.data.data);
+        for (let index = 0; index < this.produits.length; index++) {
+          if (this.produits[index].id == response.data.data.id) {
+            this.produits[index].update(response.data.data);
             break;
           }
         }

@@ -105,6 +105,18 @@ const PurpleBirdMenuConfig: Array<MenuItem> = [
           },
         ],
       },
+      {
+        route: "/produits",
+        svgIcon: getAssetPath("media/icons/duotune/art/art002.svg"),
+        fontIcon: "bi-app-indicator",
+        sectionTitle: "Gestion Produits",
+        sub: [
+          {
+            heading: "Produits",
+            route: "/produits",
+          },
+        ],
+      },
     ],
   },
 ];

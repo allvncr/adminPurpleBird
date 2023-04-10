@@ -13,7 +13,7 @@
           <h1
             class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0"
           >
-            Photographes
+            Produits
           </h1>
           <!--end::Title-->
 
@@ -31,10 +31,19 @@
             <!--end::Item-->
 
             <!--begin::Item-->
-            <li class="breadcrumb-item text-muted">Photographes</li>
+            <li class="breadcrumb-item text-muted">Produits</li>
             <!--end::Item-->
           </ul>
           <!--end::Breadcrumb-->
+        </div>
+        <div class="d-flex align-items-center gap-2 gap-lg-3">
+          <router-link
+            to="/ajout-produit"
+            class="btn btn-sm fw-bold btn-primary"
+          >
+            Ajouter
+          </router-link>
+          <!--end::Primary button-->
         </div>
       </div>
 
@@ -77,7 +86,7 @@
               v-model="search"
               data-kt-customer-table-filter="search"
               class="form-control form-control-solid w-100 ps-15"
-              placeholder="Rechercher photographe"
+              placeholder="Rechercher produit"
               @keyup="debounceInput"
             />
           </div>
@@ -89,26 +98,28 @@
           <table class="table table-row-dashed table-row-gray-300 gy-7">
             <thead>
               <tr class="fw-bolder fs-5 text-gray-800">
-                <th>ID</th>
-                <th>Avatar</th>
+                <th>Reference</th>
+                <th>Image</th>
                 <th>Nom</th>
+                <th>Prix</th>
+                <th>Date Creation</th>
                 <th></th>
               </tr>
             </thead>
             <tbody
-              v-loading="photographeStore.photographeLoader"
+              v-loading="produitStore.produitLoader"
               element-loading-background="#151521"
             >
               <tr
-                v-for="(photographe, index) in photographeStore.photographes"
+                v-for="(produit, index) in produitStore.produits"
                 :key="index"
               >
-                <td>{{ photographe.id }}</td>
+                <td>{{ produit.reference }}</td>
                 <td>
                   <img
                     class="couverture"
-                    :src="imageUrl + photographe.user.avatar"
-                    v-if="photographe.user.avatar"
+                    :src="produit.urlimage"
+                    v-if="produit.urlimage"
                     alt="couverture"
                   />
                   <i class="el-icon" style="width: 42px; height: 42px" v-else>
@@ -128,11 +139,13 @@
                     </svg>
                   </i>
                 </td>
-                <td>{{ photographe.user.name }}</td>
+                <td>{{ produit.name }}</td>
+                <td>{{ produit.price }}</td>
+                <td>{{ produit.created_at }}</td>
                 <td>
                   <div class="d-flex justify-content-end flex-shrink-0">
                     <a
-                      @click="editItem(photographe)"
+                      @click="editItem(produit)"
                       data-bs-toggle="modal"
                       data-bs-target="#kt_modal_1"
                       class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
@@ -161,7 +174,7 @@
                     </a>
 
                     <a
-                      @click="deleteItem(photographe)"
+                      @click="deleteItem(produit)"
                       class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
                     >
                       <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
@@ -227,8 +240,8 @@
             <table-pagination
               :currentPage="page"
               :perPage="perPage"
-              :totalPages="photographeStore.photographeTotalPages"
-              :total="photographeStore.photographeTotal"
+              :totalPages="produitStore.produitTotalPages"
+              :total="produitStore.produitTotal"
               @page-change="pagination"
               v-model="page"
             ></table-pagination>
@@ -242,7 +255,8 @@
       <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Modifier photographe</h5>
+            <h5 class="modal-title" v-if="!current_edit">Nouveau produit</h5>
+            <h5 class="modal-title" v-else>Modifier produit</h5>
 
             <!--begin::Close-->
             <div
@@ -266,13 +280,65 @@
                 <label
                   class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
                 >
-                  <span>Bio</span>
+                  <span>Nom</span>
+                </label>
+                <input
+                  v-model="new_produit.name"
+                  type="text"
+                  name="name"
+                  class="form-control form-control-solid"
+                />
+              </div>
+              <div class="d-flex flex-column mb-7 fv-row">
+                <label
+                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
+                >
+                  <span>Reference</span>
+                </label>
+                <input
+                  v-model="new_produit.reference"
+                  type="text"
+                  name="reference"
+                  class="form-control form-control-solid"
+                />
+              </div>
+              <div class="d-flex flex-column mb-7 fv-row">
+                <label
+                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
+                >
+                  <span>Prix</span>
+                </label>
+                <input
+                  v-model="new_produit.price"
+                  type="number"
+                  name="price"
+                  class="form-control form-control-solid"
+                />
+              </div>
+              <div class="d-flex flex-column mb-7 fv-row">
+                <label
+                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
+                >
+                  <span>Quantité Minimal</span>
+                </label>
+                <input
+                  v-model="new_produit.minimalQuantity"
+                  type="number"
+                  name="minimalQuantity"
+                  class="form-control form-control-solid"
+                />
+              </div>
+              <div class="d-flex flex-column mb-7 fv-row">
+                <label
+                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
+                >
+                  <span>Description</span>
                 </label>
                 <textarea
-                  v-model="new_photographe.bio"
+                  v-model="new_produit.description"
                   class="form-control form-control-solid"
                   aria-label="With textarea"
-                  rows="3"
+                  rows="5"
                 ></textarea>
               </div>
 
@@ -280,39 +346,37 @@
                 <label
                   class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
                 >
-                  <span>Resume</span>
+                  <span>Couleur</span>
                 </label>
-                <textarea
-                  v-model="new_photographe.resume"
+                <input
+                  v-model="new_produit.color"
+                  type="text"
+                  name="color"
                   class="form-control form-control-solid"
-                  aria-label="With textarea"
-                  rows="3"
-                ></textarea>
+                />
               </div>
 
               <div class="d-flex flex-column mb-7 fv-row">
                 <label
                   class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
                 >
-                  <span>Specialités</span>
+                  <span>Hexcode Couleur</span>
                 </label>
                 <el-select
+                  v-model="new_produit.hexCodeColors"
                   multiple
-                  placeholder="Selectionner specialités"
-                  class="form-control form-control-solid"
-                  v-model="new_photographe.specialities"
                   filterable
-                  no-data-text="Aucune specialité"
-                  collapse-tags
-                  collapse-tags-tooltip
+                  allow-create
+                  default-first-option
+                  :reserve-keyword="false"
+                  placeholder="Ajouter hexcode"
                 >
                   <el-option
-                    v-for="spe in specialiteStore.specialites"
-                    :key="spe.title"
-                    :value="spe.id"
-                    :label="spe.title"
-                  >
-                  </el-option>
+                    v-for="item in hexCodeColors"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
                 </el-select>
               </div>
 
@@ -320,71 +384,26 @@
                 <label
                   class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
                 >
-                  <span>Facebook Url</span>
+                  <span>Tailles</span>
                 </label>
-                <input
-                  v-model="new_photographe.facebook_url"
-                  type="text"
-                  name="facebook_url"
+                <el-select
+                  multiple
+                  placeholder="Selectionner taille"
                   class="form-control form-control-solid"
-                />
-              </div>
-
-              <div class="d-flex flex-column mb-7 fv-row">
-                <label
-                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
+                  v-model="new_produit.sizes"
+                  filterable
+                  no-data-text="Aucune Taille"
+                  collapse-tags
+                  collapse-tags-tooltip
                 >
-                  <span>Google Url</span>
-                </label>
-                <input
-                  v-model="new_photographe.google_url"
-                  type="text"
-                  name="google_url"
-                  class="form-control form-control-solid"
-                />
-              </div>
-
-              <div class="d-flex flex-column mb-7 fv-row">
-                <label
-                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
-                >
-                  <span>Linkedin Url</span>
-                </label>
-                <input
-                  v-model="new_photographe.linkedin_url"
-                  type="text"
-                  name="linkedin_url"
-                  class="form-control form-control-solid"
-                />
-              </div>
-              <div class="d-flex flex-column mb-7 fv-row">
-                <label
-                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
-                >
-                  <span>Linkedin Url</span>
-                </label>
-                <input
-                  v-model="new_photographe.linkedin_url"
-                  type="text"
-                  name="linkedin_url"
-                  class="form-control form-control-solid"
-                />
-              </div>
-
-              <div class="d-flex flex-column mb-7 fv-row">
-                <label
-                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
-                >
-                  <span>Video</span>
-                </label>
-                <input
-                  type="file"
-                  name="linkedin_url"
-                  class="form-control form-control-solid"
-                  accept="video/*"
-                  drop-placeholder="Déposer le fichier ici..."
-                  @change="onFileChange"
-                />
+                  <el-option
+                    v-for="size in sizes"
+                    :key="size.value"
+                    :value="size.value"
+                    :label="size.label"
+                  >
+                  </el-option>
+                </el-select>
               </div>
             </form>
           </div>
@@ -414,8 +433,8 @@
 </template>
 
 <script>
-import { usePhotographeStore } from "../../stores/photographe";
-import { useSpecialiteStore } from "../../stores/specialite";
+import { useProduitStore } from "../../stores/produit";
+import { useColorStore } from "../../stores/color";
 import TablePagination from "@/components/kt-datatable/table-partials/table-content/table-footer/TablePagination.vue";
 import Swal from "sweetalert2";
 import _ from "lodash";
@@ -426,16 +445,20 @@ export default {
   components: { TablePagination },
   data() {
     return {
+      current_edit: false,
       page: 1,
       perPage: 8,
-      new_photographe: {
+      new_produit: {
         file: null,
+        sizes: null,
       },
       search: "",
-      photographeStore: usePhotographeStore(),
-      specialiteStore: useSpecialiteStore(),
+      produitStore: useProduitStore(),
+      colorStore: useColorStore(),
       showConfirmationModal: false,
       itemToDeleteIndex: null,
+      sizes: ["S", "M", "L", "XL", "XXL"],
+      hexCodeColors: [],
     };
   },
   methods: {
@@ -446,12 +469,12 @@ export default {
 
     onFileChange(event) {
       const file = event.target.files[0];
-      this.new_photographe.file = file;
+      this.new_produit.file = file;
     },
 
     setup(reset = false) {
       if (reset) this.page = 1;
-      this.photographeStore.all_photographe({
+      this.produitStore.all_produit({
         page: reset ? 1 : this.page,
         per_page: this.perPage,
         search: this.search,
@@ -460,16 +483,15 @@ export default {
 
     pagination(page) {
       this.page = page;
-      this.photographeStore.all_photographe({
+      this.produitStore.all_produit({
         page: this.page,
         per_page: this.perPage,
       });
     },
     editItem(item) {
-      this.new_photographe = { ...item };
-      this.new_photographe.specialities = this.new_photographe.specialities.map(
-        (el) => el.id
-      );
+      this.produitStore.get_produit(item.reference).then(() => {
+        this.new_produit = this.produitStore.produit[0];
+      });
     },
     deleteItem(item) {
       Swal.fire({
@@ -488,12 +510,12 @@ export default {
         },
       }).then((response) => {
         if (response.value) {
-          this.photographeStore.delete_photographe(item).then((response) => {
+          this.produitStore.delete_produit(item).then((response) => {
             if (response) {
               this.setup();
               ElNotification({
                 title: "Succès",
-                message: "La photographe a été supprimée.",
+                message: "La produit a été supprimée.",
                 position: "bottom-left",
                 type: "success",
                 customClass: "alert-success",
@@ -531,17 +553,17 @@ export default {
       // Modification ou Creation
 
       var data = {
-        id: this.new_photographe.id,
-        bio: this.new_photographe.bio,
-        resume: this.new_photographe.resume,
-        facebook_url: this.new_photographe.facebook_url,
-        google_url: this.new_photographe.google_url,
-        linkedin_url: this.new_photographe.linkedin_url,
-        specialities: this.new_photographe.specialities,
-        video: this.new_photographe.file,
+        id: this.new_produit.id,
+        bio: this.new_produit.bio,
+        resume: this.new_produit.resume,
+        facebook_url: this.new_produit.facebook_url,
+        google_url: this.new_produit.google_url,
+        linkedin_url: this.new_produit.linkedin_url,
+        specialities: this.new_produit.specialities,
+        video: this.new_produit.file,
       };
 
-      this.photographeStore.edit_photographe(data).then((valid) => {
+      this.produitStore.edit_produit(data).then((valid) => {
         submitButtonRef.disabled = false;
         submitButtonRef?.removeAttribute("data-kt-indicator");
         if (valid) {
@@ -549,7 +571,7 @@ export default {
 
           ElNotification({
             title: "Succès",
-            message: "Photographe modifié avec succès",
+            message: "Produit modifié avec succès",
             position: "bottom-left",
             type: "success",
             customClass: "alert-success",
@@ -574,14 +596,11 @@ export default {
     },
   },
   mounted() {
-    this.photographeStore.all_photographe({
+    this.produitStore.all_produit({
       page: this.page,
       per_page: this.perPage,
     });
-    this.specialiteStore.all_specialite({
-      page: 1,
-      per_page: 1000,
-    });
+    this.colorStore.all_color();
   },
 };
 </script>

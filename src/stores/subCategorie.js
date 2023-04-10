@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import domain from "@/environment";
 import JwtService from "@/core/services/JwtService";
 
-export const useCategorieStore = defineStore("categorieArticle", {
+export const useSubCategorieStore = defineStore("subCategorie", {
   state: () => {
     return {
       // all these properties will have their type inferred automatically
@@ -20,17 +20,23 @@ export const useCategorieStore = defineStore("categorieArticle", {
     setError(errors) {
       this.errors = { ...errors };
     },
-    async all_categorie() {
+    async all_subcategorie(payload) {
       this.categorieLoader = true;
+      const params = {
+        search: payload.search,
+        page: payload.page,
+        per_page: payload.per_page,
+      };
       try {
-        const response = await axios.get(domain + "/categories", {
+        const response = await axios.get(domain + "/subjects", {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
+          params,
         });
         this.categories = response.data;
-        this.categorieTotal = response.data;
-        this.categorieTotalPages = response.data;
+        this.categorieTotal = response.data.length;
+        this.categorieTotalPages = 1;
         this.categorieLoader = false;
         return true;
       } catch ({ response }) {
@@ -39,14 +45,28 @@ export const useCategorieStore = defineStore("categorieArticle", {
         return false;
       }
     },
-    async store_categorie(payload) {
+    async get_subcategorie(payload) {
+      this.categorie = null;
       try {
-        const response = await axios.post(domain + `/categories`, payload, {
+        const response = await axios.get(domain + `/categories/` + payload, {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
         });
-        this.categories.push(response.data);
+        this.categorie = response.data;
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    async store_categorie(payload) {
+      try {
+        const response = await axios.post(domain + `/subjects`, payload, {
+          headers: {
+            Authorization: `Bearer ` + JwtService.getToken(),
+          },
+        });
+        this.categories.push(CategoryPhoto.create(response.data.data));
         this.categorieTotal++;
         return true;
       } catch ({ response }) {
@@ -56,7 +76,7 @@ export const useCategorieStore = defineStore("categorieArticle", {
     },
     async delete_categorie(payload) {
       try {
-        await axios.delete(domain + `/categories/` + payload.id, {
+        await axios.delete(domain + `/subjects/` + payload.id, {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
@@ -74,15 +94,14 @@ export const useCategorieStore = defineStore("categorieArticle", {
         return false;
       }
     },
-
     async edit_categorie(payload) {
       const params = {
         id: payload.id,
-        name: payload.name,
+        title: payload.title,
       };
       try {
         const response = await axios.put(
-          domain + `/categories/` + payload.id,
+          domain + `/subjects/` + payload.id,
           payload,
           {
             headers: {

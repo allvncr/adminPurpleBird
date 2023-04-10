@@ -9,7 +9,7 @@ import { useConfigStore } from "@/stores/config";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    redirect: "/dashboard",
+    redirect: "/utilisateurs",
     component: () => import("@/layouts/main-layout/MainLayout.vue"),
     meta: {
       middleware: "auth",
@@ -25,80 +25,11 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: "/categorie-articles",
-        name: "gestion categorie article",
-        component: () => import("@/views/admin/gestionCategories.vue"),
-        meta: {
-          pageTitle: "Categorie articles",
-        },
-      },
-      {
-        path: "/articles",
-        name: "gestion articles",
-        component: () => import("@/views/admin/gestionArticles.vue"),
-        meta: {
-          pageTitle: "Gestion articles",
-        },
-      },
-      {
-        path: "/ajout-article",
-        name: "add article",
-        component: () => import("@/views/admin/addArticle.vue"),
-        meta: {
-          pageTitle: "Ajout Article",
-        },
-      },
-      {
-        path: "/photographes",
-        name: "photographes",
-        component: () => import("@/views/admin/gestionPhotographe.vue"),
+        path: "/produits",
+        name: "produits",
+        component: () => import("@/views/admin/gestionProduit.vue"),
         meta: {
           pageTitle: "Photographes",
-          super: true,
-        },
-      },
-      {
-        path: "/categorie-photos",
-        name: "gestion categorie photos",
-        component: () => import("@/views/admin/gestionCategoriePhoto.vue"),
-        meta: {
-          pageTitle: "Categorie photos",
-          super: true,
-        },
-      },
-      {
-        path: "/specialites",
-        name: "specialités",
-        component: () => import("@/views/admin/gestionSpecialite.vue"),
-        meta: {
-          pageTitle: "Specialite",
-          super: true,
-        },
-      },
-      {
-        path: "/tags",
-        name: "tags",
-        component: () => import("@/views/admin/gestionTags.vue"),
-        meta: {
-          pageTitle: "Tags",
-          super: true,
-        },
-      },
-      {
-        path: "/permissions",
-        name: "gestion permissions",
-        component: () => import("@/views/admin/gestionPermission.vue"),
-        meta: {
-          pageTitle: "Gestion permissions",
-          super: true,
-        },
-      },
-      {
-        path: "/roles",
-        name: "gestion roles",
-        component: () => import("@/views/admin/gestionRole.vue"),
-        meta: {
-          pageTitle: "Gestion roles",
           super: true,
         },
       },
@@ -109,6 +40,14 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           pageTitle: "Gestion utilisateurs",
           super: true,
+        },
+      },
+      {
+        path: "/ajout-produit",
+        name: "add product",
+        component: () => import("@/views/admin/addProduit.vue"),
+        meta: {
+          pageTitle: "Ajout Produit",
         },
       },
     ],
