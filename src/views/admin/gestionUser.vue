@@ -330,7 +330,6 @@ export default {
       ],
       search: "",
       utilisateurStore: useUserStore(),
-      roleStore: useRoleStore(),
       showConfirmationModal: false,
       itemToDeleteIndex: null,
       current_edit: false,
