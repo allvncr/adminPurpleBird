@@ -299,7 +299,6 @@
 
 <script>
 import { useUserStore } from "../../stores/utilisateur";
-import { useRoleStore } from "../../stores/role";
 import TablePagination from "@/components/kt-datatable/table-partials/table-content/table-footer/TablePagination.vue";
 import Swal from "sweetalert2";
 import _ from "lodash";
