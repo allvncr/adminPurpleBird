@@ -315,6 +315,31 @@
                   class="form-control form-control-solid"
                 />
               </div>
+
+              <div class="d-flex flex-column mb-7 fv-row">
+                <label
+                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
+                >
+                  <span class="required">Tableau Prix</span>
+                </label>
+                <el-select
+                  v-model="new_produit.prices"
+                  multiple
+                  filterable
+                  allow-create
+                  default-first-option
+                  :reserve-keyword="false"
+                  placeholder="Ajouter quantité"
+                >
+                  <el-option
+                    v-for="item in prices"
+                    :key="item"
+                    :label="item"
+                    :value="item"
+                  />
+                </el-select>
+              </div>
+
               <div class="d-flex flex-column mb-7 fv-row">
                 <label
                   class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
@@ -328,6 +353,31 @@
                   class="form-control form-control-solid"
                 />
               </div>
+
+              <div class="d-flex flex-column mb-7 fv-row">
+                <label
+                  class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
+                >
+                  <span class="required">Tableau Quantité</span>
+                </label>
+                <el-select
+                  v-model="new_produit.quantities"
+                  multiple
+                  filterable
+                  allow-create
+                  default-first-option
+                  :reserve-keyword="false"
+                  placeholder="Ajouter quantité"
+                >
+                  <el-option
+                    v-for="item in quantities"
+                    :key="item"
+                    :label="item"
+                    :value="item"
+                  />
+                </el-select>
+              </div>
+
               <div class="d-flex flex-column mb-7 fv-row">
                 <label
                   class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
@@ -398,9 +448,9 @@
                 >
                   <el-option
                     v-for="size in sizes"
-                    :key="size.value"
-                    :value="size.value"
-                    :label="size.label"
+                    :key="size"
+                    :value="size"
+                    :label="size"
                   >
                   </el-option>
                 </el-select>
@@ -436,6 +486,9 @@
 import { useProduitStore } from "../../stores/produit";
 import { useColorStore } from "../../stores/color";
 import TablePagination from "@/components/kt-datatable/table-partials/table-content/table-footer/TablePagination.vue";
+import { useCategorieStore } from "../../stores/categorieArticle";
+import { useSubCategorieStore } from "../../stores/subCategorie";
+import { useInfoSubCategorieStore } from "../../stores/infoSubCategorie";
 import Swal from "sweetalert2";
 import _ from "lodash";
 import { hideModal } from "@/core/helpers/dom";
@@ -454,6 +507,9 @@ export default {
       },
       search: "",
       produitStore: useProduitStore(),
+      categorieStore: useCategorieStore(),
+      subCategorieStore: useSubCategorieStore(),
+      infoSubCategorieStore: useInfoSubCategorieStore(),
       colorStore: useColorStore(),
       showConfirmationModal: false,
       itemToDeleteIndex: null,
@@ -491,12 +547,13 @@ export default {
     editItem(item) {
       this.produitStore.get_produit(item.reference).then(() => {
         this.new_produit = this.produitStore.produit[0];
+        console.log(this.new_produit);
       });
     },
     deleteItem(item) {
       Swal.fire({
         background: "#1e1e2d",
-        text: "Êtes-vous sûr de vouloir supprimer " + item.title + " ?",
+        text: "Êtes-vous sûr de vouloir supprimer " + item.name + " ?",
         icon: "warning",
         buttonsStyling: false,
         confirmButtonText: "Oui, Supprimer !",
@@ -552,18 +609,23 @@ export default {
       submitButtonRef.setAttribute("data-kt-indicator", "on");
       // Modification ou Creation
 
-      var data = {
-        id: this.new_produit.id,
-        bio: this.new_produit.bio,
-        resume: this.new_produit.resume,
-        facebook_url: this.new_produit.facebook_url,
-        google_url: this.new_produit.google_url,
-        linkedin_url: this.new_produit.linkedin_url,
-        specialities: this.new_produit.specialities,
-        video: this.new_produit.file,
-      };
+      const formData = new FormData();
+      formData.append("id", this.new_produit.id);
+      formData.append("name", this.new_produit.name);
+      formData.append("price", this.new_produit.price);
+      formData.append("reference", this.new_produit.reference);
+      formData.append("description", this.new_produit.description);
+      formData.append("minimalQuantity", this.new_produit.minimalQuantity);
+      formData.append("color", this.new_produit.color);
+      formData.append("hexCodeColors", this.new_produit.hexCodeColors);
+      formData.append("quantities", this.new_produit.quantities);
+      formData.append("prices", this.new_produit.prices);
 
-      this.produitStore.edit_produit(data).then((valid) => {
+      // for (let i = 0; i < this.new_produit.images.length; i++) {
+      //   formData.append("images[]", this.new_produit.images[i]);
+      // }
+
+      this.produitStore.edit_produit(formData).then((valid) => {
         submitButtonRef.disabled = false;
         submitButtonRef?.removeAttribute("data-kt-indicator");
         if (valid) {
@@ -601,6 +663,7 @@ export default {
       per_page: this.perPage,
     });
     this.colorStore.all_color();
+    this.categorieStore.all_categorie();
   },
 };
 </script>

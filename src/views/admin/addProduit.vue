@@ -50,6 +50,7 @@
           name="price"
           class="form-control form-control-solid"
           placeholder=""
+          step="any"
           required
         />
       </div>
@@ -408,19 +409,26 @@ export default {
       // creation
       const formData = new FormData();
       formData.append("name", this.new_produit.name);
-      formData.append("reference", this.new_produit.reference);
       formData.append("price", this.new_produit.price);
-      formData.append("minimalQuantity", this.new_produit.minimalQuantity);
+      formData.append("reference", this.new_produit.reference);
       formData.append("description", this.new_produit.description);
+      formData.append("minimalQuantity", this.new_produit.minimalQuantity);
       formData.append("color", this.new_produit.color);
       formData.append("hexCodeColors", this.new_produit.hexCodeColors);
-      formData.append("sizes", this.new_produit.sizes);
       formData.append("quantities", this.new_produit.quantities);
       formData.append("prices", this.new_produit.prices);
-      formData.append("images", this.new_produit.images);
+
+      for (let i = 0; i < this.new_produit.images.length; i++) {
+        formData.append("images[]", this.new_produit.images[i]);
+      }
+
       var categories_fk = [];
       categories_fk.push(this.new_produit.categories_fk);
       formData.append("categories_fk", categories_fk);
+
+      if (this.new_produit.sizes.length)
+        formData.append("sizes", this.new_produit.sizes);
+
       formData.append("subCategory_fk", this.new_produit.subCategory_fk);
 
       if (this.new_produit.infoSubCategory_fk)
@@ -428,7 +436,6 @@ export default {
           "infoSubCategory_fk",
           this.new_produit.infoSubCategory_fk
         );
-
       this.produitStore.store_produit(formData).then((valid) => {
         submitButtonRef.disabled = false;
         submitButtonRef?.removeAttribute("data-kt-indicator");
