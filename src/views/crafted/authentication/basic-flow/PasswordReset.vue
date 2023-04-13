@@ -103,37 +103,10 @@ export default defineComponent({
 
       // dummy delay
       // Send login request
-      await store.forgotPassword(values);
-
-      const error = Object.values(store.errors);
-
-      if (!error) {
-        Swal.fire({
-          text: "You have successfully logged in!",
-          icon: "success",
-          buttonsStyling: false,
-          confirmButtonText: "Ok, got it!",
-          heightAuto: false,
-          customClass: {
-            confirmButton: "btn fw-semobold btn-light-primary",
-          },
-        });
-      } else {
-        Swal.fire({
-          text: error[0] as string,
-          icon: "error",
-          buttonsStyling: false,
-          confirmButtonText: "Try again!",
-          heightAuto: false,
-          customClass: {
-            confirmButton: "btn fw-semobold btn-light-danger",
-          },
-        });
-      }
 
       submitButton.value?.removeAttribute("data-kt-indicator");
       // eslint-disable-next-line
-        submitButton.value!.disabled = false;
+      submitButton.value!.disabled = false;
     };
 
     return {
