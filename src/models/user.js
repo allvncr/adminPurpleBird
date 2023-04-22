@@ -1,5 +1,3 @@
-import Role from "./role";
-
 export default class User {
   constructor(data) {
     this.id = data.id;

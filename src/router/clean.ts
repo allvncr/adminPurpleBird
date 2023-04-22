@@ -50,6 +50,33 @@ const routes: Array<RouteRecordRaw> = [
           pageTitle: "Ajout Produit",
         },
       },
+      {
+        path: "/equipes",
+        name: "gestion equipes",
+        component: () => import("@/views/admin/gestionEquipe.vue"),
+        meta: {
+          pageTitle: "Gestion equipes",
+          super: true,
+        },
+      },
+      {
+        path: "/catalogues",
+        name: "gestion catalogues",
+        component: () => import("@/views/admin/gestionCatalogue.vue"),
+        meta: {
+          pageTitle: "Gestion catalogues",
+          super: true,
+        },
+      },
+      {
+        path: "/banners",
+        name: "gestion banners",
+        component: () => import("@/views/admin/gestionBanner.vue"),
+        meta: {
+          pageTitle: "Gestion banners",
+          super: true,
+        },
+      },
     ],
   },
   {

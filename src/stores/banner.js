@@ -2,16 +2,16 @@ import axios from "axios";
 import { defineStore } from "pinia";
 import domain from "@/environment";
 import JwtService from "@/core/services/JwtService";
-import Specialite from "@/models/specialite";
+import Banner from "@/models/banner";
 
-export const useSpecialiteStore = defineStore("Specialite", {
+export const useBannerStore = defineStore("Banner", {
   state: () => {
     return {
       // all these properties will have their type inferred automatically
-      specialites: [],
-      specialiteTotal: 0,
-      specialiteTotalPages: 0,
-      specialiteLoader: false,
+      banners: [],
+      bannerTotal: 0,
+      bannerTotalPages: 0,
+      bannerLoader: false,
       errors: [],
     };
   },
@@ -20,59 +20,57 @@ export const useSpecialiteStore = defineStore("Specialite", {
     setError(errors) {
       this.errors = { ...errors };
     },
-    async all_specialite(payload) {
-      this.specialiteLoader = true;
+    async all_banner(payload) {
+      this.bannerLoader = true;
       const params = {
         search: payload.search,
         page: payload.page,
         per_page: payload.per_page,
       };
       try {
-        const response = await axios.get(domain + "/specialities", {
+        const response = await axios.get(domain + "/banners/all", {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
           params,
         });
-        this.specialites = response.data.data.data.map((item) =>
-          Specialite.create(item)
-        );
-        this.specialiteTotal = response.data.data.meta.total;
-        this.specialiteTotalPages = response.data.data.meta.last_page;
-        this.specialiteLoader = false;
+        this.banners = response.data.map((item) => Banner.create(item));
+        this.bannerTotal = response.data.length;
+        this.bannerTotalPages = 1;
+        this.bannerLoader = false;
         return true;
       } catch ({ response }) {
         this.setError(response.data.errors);
-        this.specialiteLoader = false;
+        this.bannerLoader = false;
         return false;
       }
     },
-    async store_specialite(payload) {
+    async store_banner(payload) {
       try {
-        const response = await axios.post(domain + `/specialities`, payload, {
+        const response = await axios.post(domain + `/banners`, payload, {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
         });
-        this.specialites.push(response.data.data);
-        this.specialiteTotal++;
+        // this.banners.push(Banner.create(payload));
+        this.bannerTotal++;
         return true;
       } catch ({ response }) {
         this.setError(response.data.errors);
         return false;
       }
     },
-    async delete_specialite(payload) {
+    async delete_banner(payload) {
       try {
-        await axios.delete(domain + `/specialities/` + payload.id, {
+        await axios.delete(domain + `/banners/delete/` + payload.id, {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
         });
-        for (let index = 0; index < this.specialites.length; index++) {
-          if (this.specialites[index].id == payload.id) {
-            this.specialites.splice(index, 1);
-            this.specialiteTotal--;
+        for (let index = 0; index < this.banners.length; index++) {
+          if (this.banners[index].id == payload.id) {
+            this.banners.splice(index, 1);
+            this.bannerTotal--;
             break;
           }
         }
@@ -82,14 +80,14 @@ export const useSpecialiteStore = defineStore("Specialite", {
         return false;
       }
     },
-    async edit_specialite(payload) {
+    async edit_banner(payload) {
       const params = {
         id: payload.id,
         name: payload.name,
       };
       try {
         const response = await axios.put(
-          domain + `/specialities/` + payload.id,
+          domain + `/banners/` + payload.id,
           payload,
           {
             headers: {
@@ -98,9 +96,9 @@ export const useSpecialiteStore = defineStore("Specialite", {
             params,
           }
         );
-        for (let index = 0; index < this.specialites.length; index++) {
-          if (this.specialites[index].id == response.data.data.id) {
-            this.specialites[index].update(response.data.data);
+        for (let index = 0; index < this.banners.length; index++) {
+          if (this.banners[index].id == response.data.data.id) {
+            this.banners[index].update(response.data.data);
             break;
           }
         }

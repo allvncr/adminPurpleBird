@@ -2,16 +2,16 @@ import axios from "axios";
 import { defineStore } from "pinia";
 import domain from "@/environment";
 import JwtService from "@/core/services/JwtService";
-import Tag from "@/models/tag";
+import Equipe from "@/models/equipe";
 
-export const useTagStore = defineStore("Tag", {
+export const useEquipeStore = defineStore("Equipe", {
   state: () => {
     return {
       // all these properties will have their type inferred automatically
-      tags: [],
-      tagTotal: 0,
-      tagTotalPages: 0,
-      tagLoader: false,
+      equipes: [],
+      equipeTotal: 0,
+      equipeTotalPages: 0,
+      equipeLoader: false,
       errors: [],
     };
   },
@@ -20,57 +20,57 @@ export const useTagStore = defineStore("Tag", {
     setError(errors) {
       this.errors = { ...errors };
     },
-    async all_tag(payload) {
-      this.tagLoader = true;
+    async all_equipe(payload) {
+      this.equipeLoader = true;
       const params = {
         search: payload.search,
         page: payload.page,
         per_page: payload.per_page,
       };
       try {
-        const response = await axios.get(domain + "/tags", {
+        const response = await axios.get(domain + "/team", {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
           params,
         });
-        this.tags = response.data.data.data.map((item) => Tag.create(item));
-        this.tagTotal = response.data.data.meta.total;
-        this.tagTotalPages = response.data.data.meta.last_page;
-        this.tagLoader = false;
+        this.equipes = response.data.map((item) => Equipe.create(item));
+        this.equipeTotal = response.data.length;
+        this.equipeTotalPages = 1;
+        this.equipeLoader = false;
         return true;
       } catch ({ response }) {
         this.setError(response.data.errors);
-        this.tagLoader = false;
+        this.equipeLoader = false;
         return false;
       }
     },
-    async store_tag(payload) {
+    async store_equipe(payload) {
       try {
-        const response = await axios.post(domain + `/tags`, payload, {
+        const response = await axios.post(domain + `/team/create`, payload, {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
         });
-        this.tags.push(Tag.create(response.data.data));
-        this.tagTotal++;
+        this.equipes.push(Equipe.create(payload));
+        this.equipeTotal++;
         return true;
       } catch ({ response }) {
         this.setError(response.data.errors);
         return false;
       }
     },
-    async delete_tag(payload) {
+    async delete_equipe(payload) {
       try {
-        await axios.delete(domain + `/tags/` + payload.id, {
+        await axios.delete(domain + `/team/delete/` + payload.id, {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
         });
-        for (let index = 0; index < this.tags.length; index++) {
-          if (this.tags[index].id == payload.id) {
-            this.tags.splice(index, 1);
-            this.tagTotal--;
+        for (let index = 0; index < this.equipes.length; index++) {
+          if (this.equipes[index].id == payload.id) {
+            this.equipes.splice(index, 1);
+            this.equipeTotal--;
             break;
           }
         }
@@ -80,14 +80,14 @@ export const useTagStore = defineStore("Tag", {
         return false;
       }
     },
-    async edit_tag(payload) {
+    async edit_equipe(payload) {
       const params = {
         id: payload.id,
         name: payload.name,
       };
       try {
         const response = await axios.put(
-          domain + `/tags/` + payload.id,
+          domain + `/team/` + payload.id,
           payload,
           {
             headers: {
@@ -96,9 +96,9 @@ export const useTagStore = defineStore("Tag", {
             params,
           }
         );
-        for (let index = 0; index < this.tags.length; index++) {
-          if (this.tags[index].id == response.data.data.id) {
-            this.tags[index].update(response.data.data);
+        for (let index = 0; index < this.equipes.length; index++) {
+          if (this.equipes[index].id == response.data.data.id) {
+            this.equipes[index].update(response.data.data);
             break;
           }
         }
