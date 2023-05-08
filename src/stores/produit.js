@@ -77,11 +77,7 @@ export const useProduitStore = defineStore("Produit", {
     },
     async delete_produit(payload) {
       try {
-        await axios.delete(domain + `/products/` + payload.reference, {
-          headers: {
-            Authorization: `Bearer ` + JwtService.getToken(),
-          },
-        });
+        await axios.delete(domain + `/products/` + payload.reference);
         return true;
       } catch ({ response }) {
         return false;

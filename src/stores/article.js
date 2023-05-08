@@ -68,11 +68,7 @@ export const useArticleStore = defineStore("Article", {
     },
     async delete_article(payload) {
       try {
-        await axios.delete(domain + `/articles/` + payload.id, {
-          headers: {
-            Authorization: `Bearer ` + JwtService.getToken(),
-          },
-        });
+        await axios.delete(domain + `/articles/` + payload.id);
         for (let index = 0; index < this.articles.length; index++) {
           if (this.articles[index].id == payload.id) {
             this.articles.splice(index, 1);
