@@ -9,6 +9,7 @@ export const useProduitStore = defineStore("Produit", {
     return {
       // all these properties will have their type inferred automatically
       produits: [],
+      produitList: [],
       produit: null,
       produitTotal: 0,
       produitTotalPages: 0,
@@ -35,9 +36,15 @@ export const useProduitStore = defineStore("Produit", {
           },
           params,
         });
-        this.produits = response.data;
+        this.produitList = response.data;
+        this.produits = this.produitList.slice(
+          payload.per_page * (payload.page - 1),
+          payload.per_page * payload.page
+        );
         this.produitTotal = response.data.length;
-        this.produitTotalPages = 1;
+        this.produitTotalPages = Math.ceil(
+          this.produitTotal / payload.per_page
+        );
         this.produitLoader = false;
         return true;
       } catch ({ response }) {
