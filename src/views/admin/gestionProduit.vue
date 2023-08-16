@@ -312,6 +312,7 @@
                 <input
                   v-model="new_produit.price"
                   type="number"
+                  step=".01"
                   name="price"
                   class="form-control form-control-solid"
                 />
