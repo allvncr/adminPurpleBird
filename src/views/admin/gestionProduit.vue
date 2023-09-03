@@ -290,7 +290,7 @@
                   class="form-control form-control-solid"
                 />
               </div>
-              <div class="d-flex flex-column mb-7 fv-row">
+              <!-- <div class="d-flex flex-column mb-7 fv-row">
                 <label
                   class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
                 >
@@ -301,8 +301,9 @@
                   type="text"
                   name="reference"
                   class="form-control form-control-solid"
+                  disabled
                 />
-              </div>
+              </div> -->
               <div class="d-flex flex-column mb-7 fv-row">
                 <label
                   class="d-flex align-items-center fs-6 fw-semobold form-label mb-2"
@@ -612,47 +613,62 @@ export default {
       submitButtonRef.setAttribute("data-kt-indicator", "on");
       // Modification ou Creation
 
-      const formData = new FormData();
-      formData.append("id", this.new_produit.id);
-      formData.append("name", this.new_produit.name);
-      formData.append("price", this.new_produit.price);
-      formData.append("reference", this.new_produit.reference);
-      formData.append("description", this.new_produit.description);
-      formData.append("minimalQuantity", this.new_produit.minimalQuantity);
-      formData.append("color", this.new_produit.color);
-      formData.append("hexCodeColors", this.new_produit.hexCodeColors);
-      formData.append("quantities", this.new_produit.quantities);
-      formData.append("prices", this.new_produit.prices);
+      // const formData = new FormData();
+      // formData.append("id", this.new_produit.id);
+      // formData.append("name", this.new_produit.name);
+      // formData.append("price", this.new_produit.price);
+      // formData.append("reference", this.new_produit.reference);
+      // formData.append("description", this.new_produit.description);
+      // formData.append("minimalQuantity", this.new_produit.minimalQuantity);
+      // formData.append("color", this.new_produit.color);
+      // formData.append("hexCodeColors", this.new_produit.hexCodeColors);
+      // formData.append("quantities", this.new_produit.quantities);
+      // formData.append("prices", this.new_produit.prices);
+      // formData.append("sizes", this.new_produit.sizes);
 
       // for (let i = 0; i < this.new_produit.images.length; i++) {
       //   formData.append("images[]", this.new_produit.images[i]);
       // }
 
-      this.produitStore.edit_produit(formData).then((valid) => {
-        submitButtonRef.disabled = false;
-        submitButtonRef?.removeAttribute("data-kt-indicator");
-        if (valid) {
-          this.setup();
+      this.produitStore
+        .edit_produit({
+          id: this.new_produit.id,
+          name: this.new_produit.name,
+          price: this.new_produit.price,
+          reference: this.new_produit.reference,
+          description: this.new_produit.description,
+          minimalQuantity: this.new_produit.minimalQuantity,
+          color: this.new_produit.color,
+          hexCodeColors: this.new_produit.hexCodeColors,
+          quantities: this.new_produit.quantities,
+          prices: this.new_produit.prices,
+          sizes: this.new_produit.sizes,
+        })
+        .then((valid) => {
+          submitButtonRef.disabled = false;
+          submitButtonRef?.removeAttribute("data-kt-indicator");
+          if (valid) {
+            this.setup();
 
-          ElNotification({
-            title: "Succès",
-            message: "Produit modifié avec succès",
-            position: "bottom-left",
-            type: "success",
-            customClass: "alert-success",
-          });
-          hideModal(this.$refs.newCardModalRef);
-        } else {
-          ElNotification({
-            title: "Erreur",
-            message:
-              "Désolé, il semble que des erreurs aient été détectées, veuillez réessayer.",
-            position: "bottom-left",
-            type: "error",
-            customClass: "alert-danger",
-          });
-        }
-      });
+            ElNotification({
+              title: "Succès",
+              message: "Produit modifié avec succès",
+              position: "bottom-left",
+              type: "success",
+              customClass: "alert-success",
+            });
+            hideModal(this.$refs.newCardModalRef);
+          } else {
+            ElNotification({
+              title: "Erreur",
+              message:
+                "Désolé, il semble que des erreurs aient été détectées, veuillez réessayer.",
+              position: "bottom-left",
+              type: "error",
+              customClass: "alert-danger",
+            });
+          }
+        });
     },
   },
   computed: {

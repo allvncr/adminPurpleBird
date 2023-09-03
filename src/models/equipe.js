@@ -4,12 +4,14 @@ export default class Equipe {
     this.name = data.name;
     this.job = data.job;
     this.email = data.email;
+    this.photo = data.photo;
   }
   update(data) {
     this.id = data.id;
     this.name = data.name;
     this.job = data.job;
     this.email = data.email;
+    this.photo = data.photo;
   }
 
   static create(data) {

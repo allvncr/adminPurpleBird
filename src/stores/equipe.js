@@ -81,19 +81,15 @@ export const useEquipeStore = defineStore("Equipe", {
       }
     },
     async edit_equipe(payload) {
-      const params = {
-        id: payload.id,
-        name: payload.name,
-      };
       try {
         const response = await axios.put(
-          domain + `/team/` + payload.id,
+          domain + `/team/` + payload.get("id"),
           payload,
           {
             headers: {
               Authorization: `Bearer ` + JwtService.getToken(),
             },
-            params,
+            payload,
           }
         );
         for (let index = 0; index < this.equipes.length; index++) {

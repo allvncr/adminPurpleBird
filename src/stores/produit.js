@@ -92,7 +92,7 @@ export const useProduitStore = defineStore("Produit", {
     },
     async edit_produit(payload) {
       try {
-        await axios.put(domain + `/products/` + payload.get("id"), payload, {
+        await axios.patch(domain + `/products/` + payload.reference, payload, {
           headers: {
             Authorization: `Bearer ` + JwtService.getToken(),
           },
