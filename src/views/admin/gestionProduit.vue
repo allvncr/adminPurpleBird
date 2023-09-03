@@ -532,7 +532,10 @@ export default {
     },
 
     setup(reset = false) {
-      if (reset) this.page = 1;
+      if (reset) {
+        this.page = 1;
+        this.search = "";
+      }
       this.produitStore.all_produit({
         page: reset ? 1 : this.page,
         per_page: this.perPage,
@@ -554,46 +557,45 @@ export default {
       });
     },
     deleteItem(item) {
-      this.produitStore.delete_produit(item);
-      // Swal.fire({
-      //   background: "#1e1e2d",
-      //   text: "Êtes-vous sûr de vouloir supprimer " + item.name + " ?",
-      //   icon: "warning",
-      //   buttonsStyling: false,
-      //   confirmButtonText: "Oui, Supprimer !",
-      //   showDenyButton: true,
-      //   denyButtonText: "Non, annuler",
-      //   heightAuto: false,
-      //   iconColor: "#ffc700",
-      //   customClass: {
-      //     confirmButton: "btn fw-semobold btn-danger",
-      //     denyButton: "btn fw-semobold btn-white",
-      //   },
-      // }).then((response) => {
-      //   if (response.value) {
-      //     this.produitStore.delete_produits(item).then((response) => {
-      //       if (response) {
-      //         this.setup();
-      //         ElNotification({
-      //           title: "Succès",
-      //           message: "La produit a été supprimée.",
-      //           position: "bottom-left",
-      //           type: "success",
-      //           customClass: "alert-success",
-      //         });
-      //       } else {
-      //         ElNotification({
-      //           title: "Erreur",
-      //           message:
-      //             "Désolé, il semble que des erreurs aient été détectées, veuillez réessayer.",
-      //           position: "bottom-left",
-      //           type: "error",
-      //           customClass: "alert-danger",
-      //         });
-      //       }
-      //     });
-      //   }
-      // });
+      Swal.fire({
+        background: "#1e1e2d",
+        text: "Êtes-vous sûr de vouloir supprimer " + item.name + " ?",
+        icon: "warning",
+        buttonsStyling: false,
+        confirmButtonText: "Oui, Supprimer !",
+        showDenyButton: true,
+        denyButtonText: "Non, annuler",
+        heightAuto: false,
+        iconColor: "#ffc700",
+        customClass: {
+          confirmButton: "btn fw-semobold btn-danger",
+          denyButton: "btn fw-semobold btn-white",
+        },
+      }).then((response) => {
+        if (response.value) {
+          this.produitStore.delete_produit(item).then((response) => {
+            if (response) {
+              this.setup(true);
+              ElNotification({
+                title: "Succès",
+                message: "La produit a été supprimée.",
+                position: "bottom-left",
+                type: "success",
+                customClass: "alert-success",
+              });
+            } else {
+              ElNotification({
+                title: "Erreur",
+                message:
+                  "Désolé, il semble que des erreurs aient été détectées, veuillez réessayer.",
+                position: "bottom-left",
+                type: "error",
+                customClass: "alert-danger",
+              });
+            }
+          });
+        }
+      });
     },
     validateForm() {
       const form = this.$refs.create_cat_form;
